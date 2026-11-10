@@ -16,7 +16,7 @@ $registry = new Registry([new FirecrawlFactory($http)], [
 
 The key goes by reference: `FIRECRAWL_API_KEY` names an environment variable (or a secret of the
 `SecretsInterface` given to the factory), never the key itself. Its usage policy is
-`policy.json` (limits, terms, what they say of lawful use), read on the day it says. See
+`policy.json` (limits, terms, what they say of lawful use), read on the day it says; the limits of each plan the service publishes are `plans.json`, picked with the `plan` option (free (default), hobby, standard, growth, scale). See
 [docs/index.md](docs/index.md).
 
 Tested on recorded answers written from the service's documentation; no test calls the service.

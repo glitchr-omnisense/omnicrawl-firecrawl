@@ -6,6 +6,7 @@ use Omnicrawl\Agent;
 use Omnicrawl\Config;
 use Omnicrawl\Exception\InvalidConfigException;
 use Omnicrawl\Http\JsonClient;
+use Omnicrawl\Policy\Plans;
 use Omnicrawl\ProviderFactory;
 use Omnicrawl\ProviderInterface;
 use Omnicrawl\Secrets\EnvSecrets;
@@ -18,7 +19,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * key, "FIRECRAWL_API_KEY": an environment variable by default, the
  * factory's secrets otherwise - never the key itself), user_agent (the
  * registry gives the gate's), base_uri (https://api.firecrawl.dev/v2),
- * timeout (seconds, 60); policy, usage.
+ * timeout (seconds, 60), plan (free by default; hobby, standard, growth,
+ * scale: plans.json, as Firecrawl publishes their limits); policy, usage.
  */
 final class FirecrawlFactory extends ProviderFactory
 {
@@ -49,6 +51,11 @@ final class FirecrawlFactory extends ProviderFactory
         $http = ($this->http ?? HttpClient::create())->withOptions(['timeout' => $c->float('timeout', 60.0)]);
         $key = $this->secrets->get((string) $c->string('api_key'));
 
-        return new FirecrawlProvider(new JsonClient($http, 'Firecrawl', ['Authorization' => 'Bearer '.$key, 'Accept' => 'application/json'], $c->backoff()), $base);
+        return new FirecrawlProvider(new JsonClient($http, 'Firecrawl', ['Authorization' => 'Bearer '.$key, 'Accept' => 'application/json'], $c->backoff()), $base, $c->string('plan'));
+    }
+
+    protected function plans(): Plans
+    {
+        return Plans::fromFile(FirecrawlProvider::PLANS);
     }
 }

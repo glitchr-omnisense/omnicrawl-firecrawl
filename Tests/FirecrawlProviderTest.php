@@ -3,6 +3,7 @@
 namespace Omnicrawl\Firecrawl\Tests;
 
 use Omnicrawl\Agent;
+use Omnicrawl\Exception\InvalidConfigException;
 use Omnicrawl\Exception\RefusedException;
 use Omnicrawl\Exception\TargetRefusedException;
 use Omnicrawl\Exception\UsageLimitReachedException;
@@ -10,11 +11,14 @@ use Omnicrawl\Firecrawl\FirecrawlFactory;
 use Omnicrawl\Firecrawl\FirecrawlProvider;
 use Omnicrawl\Guard\Gate;
 use Omnicrawl\Model\RunStatus;
+use Omnicrawl\Policy\Plans;
 use Omnicrawl\Registry;
 use Omnicrawl\Secrets\ArraySecrets;
 use Omnicrawl\Target\Targets;
 use Omnicrawl\Testing\RecordedHttpClient;
+use Omnisense\Contracts\Policy\InvalidPolicyException;
 use Omnisense\Contracts\Policy\Permission;
+use Omnisense\Contracts\Policy\UsagePolicy;
 use PHPUnit\Framework\TestCase;
 
 /** Firecrawl's v2 calls as its API reference writes them, answered from recordings: no live call. */
@@ -24,11 +28,12 @@ final class FirecrawlProviderTest extends TestCase
 
     private const DOCS = ['target' => 'docs.example.org', 'collection' => 'allowed', 'authority' => 'own-site', 'reference' => 'https://docs.example.org', 'date' => '2026-11-10', 'operations' => ['page-fetch', 'extract', 'crawl-runs'], 'render' => true, 'rateLimits' => [['max' => 60, 'window' => 'minute']]];
 
-    private static function registry(RecordedHttpClient $api, ?RecordedHttpClient $site = null): Registry
+    /** @param array<string, mixed> $options */
+    private static function registry(RecordedHttpClient $api, ?RecordedHttpClient $site = null, array $options = []): Registry
     {
         $site ??= RecordedHttpClient::routes(['~/robots\.txt$~' => [200, "User-agent: *\nDisallow: /admin/\n"]]);
 
-        return new Registry([new FirecrawlFactory($api, new ArraySecrets(['FIRECRAWL_API_KEY' => 'fc-not-a-real-key']))], ['firecrawl' => ['factory' => 'firecrawl', 'options' => ['api_key' => 'FIRECRAWL_API_KEY']]], new Gate(Agent::parse(self::UA), $site, new Targets([self::DOCS])));
+        return new Registry([new FirecrawlFactory($api, new ArraySecrets(['FIRECRAWL_API_KEY' => 'fc-not-a-real-key']))], ['firecrawl' => ['factory' => 'firecrawl', 'options' => ['api_key' => 'FIRECRAWL_API_KEY'] + $options]], new Gate(Agent::parse(self::UA), $site, new Targets([self::DOCS])));
     }
 
     /** @return array<mixed> the JSON body of the service's first request */
@@ -140,5 +145,26 @@ final class FirecrawlProviderTest extends TestCase
             self::assertSame(30, $e->retryAfter);
             self::assertStringNotContainsString('fc-not-a-real-key', $e->getMessage());
         }
+    }
+
+    public function testAPaidPlansLimitsAndOnlyTighteningThem(): void
+    {
+        $api = RecordedHttpClient::routes([]);
+        $growth = self::registry($api, null, ['plan' => 'growth'])->policy('firecrawl');
+
+        self::assertSame(['5000/minute/application/fetch', '1000/minute/application/start'], array_map(static fn ($l) => $l->id(), $growth->rateLimits ?? []));
+        self::assertSame(50, $growth->concurrency);
+        $ids = static fn (UsagePolicy $p) => [array_map(static fn ($l) => $l->id(), $p->rateLimits ?? []), $p->concurrency];
+        self::assertSame($ids(UsagePolicy::fromFile(FirecrawlProvider::POLICY)), $ids(Plans::fromFile(FirecrawlProvider::PLANS)->apply(UsagePolicy::fromFile(FirecrawlProvider::POLICY))), 'policy.json is the default plan');
+
+        $tight = self::registry($api, null, ['plan' => 'growth', 'policy' => ['rateLimits' => [['max' => 60, 'window' => 'minute', 'operations' => ['fetch']]]]])->policy('firecrawl');
+        self::assertCount(3, $tight->rateLimits ?? []);
+        try {
+            self::registry($api, null, ['plan' => 'hobby', 'policy' => ['rateLimits' => [['max' => 5000, 'window' => 'minute', 'operations' => ['fetch']]]]])->policy('firecrawl');
+            self::fail('A site raised its plan\'s limit.');
+        } catch (InvalidPolicyException) {
+        }
+        $this->expectException(InvalidConfigException::class);
+        self::registry($api, null, ['plan' => 'enterprise'])->get('firecrawl');
     }
 }
