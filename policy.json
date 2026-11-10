@@ -1,0 +1,40 @@
+{
+    "$schema": "https://github.com/glitchr-omnisense/contracts/blob/1.x/resources/usage-policy.schema.json",
+    "provider": "firecrawl",
+    "rateLimits": [
+        {
+            "max": 10,
+            "window": "minute",
+            "operations": ["fetch"],
+            "note": "Free plan: /scrape 10 requests a minute per team. Paid plans have more; a site on one adds nothing here (a site cannot raise a declared limit): see notes."
+        },
+        {
+            "max": 2,
+            "window": "minute",
+            "operations": ["start"],
+            "note": "Free plan: /crawl 2 requests a minute per team, which batch scrape shares; counted on starting a run (the status reads are not in the published table read on that day)."
+        }
+    ],
+    "concurrency": 2,
+    "rights": {
+        "commercial": "contract",
+        "openSourceRequired": false,
+        "caching": {"permission": "unknown", "maxTtl": null},
+        "storage": "unknown",
+        "redistribution": "unknown",
+        "attribution": {"required": false, "text": null, "url": null, "where": []},
+        "licence": null
+    },
+    "requirements": {
+        "key": true,
+        "userAgent": {"required": false, "pattern": null}
+    },
+    "provenance": {
+        "terms": "https://www.firecrawl.dev/terms-of-service",
+        "policy": "https://docs.firecrawl.dev/rate-limits",
+        "verifiedAt": "2026-11-10",
+        "declaredBy": "maintainer",
+        "contact": "https://www.firecrawl.dev",
+        "notes": "Terms revised 2026-10-07. §5.d.1 forbids use for commercial purposes except as expressly authorized by Firecrawl: declared \"contract\" (a paid plan's agreement is that authorization; check yours). §7.g: use only in compliance with all applicable laws and regulations; the customer indemnifies Firecrawl and accepts all risks associated with third parties and their content - the legality of collecting a site stays the site's operator's, which is why omnicrawl's gate decides before Firecrawl is called. The terms say nothing of robots.txt or of keeping results. Limits are per team and per plan (https://docs.firecrawl.dev/rate-limits); a 429 covers rate and concurrency, with Retry-After when available. Firecrawl checks robots.txt itself for the token FirecrawlAgent and * before crawling, which the family does not rely on. Not used: proxy \"enhanced\"/\"auto\" (anti-bot proxies), actions, location, mobile."
+    }
+}

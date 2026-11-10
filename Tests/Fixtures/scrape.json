@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "data": {
+    "rawHtml": "<!doctype html><html lang=\"en\"><head><title>Docs home</title><meta name=\"robots\" content=\"noarchive\"><meta property=\"og:title\" content=\"Example docs\"></head><body><h1>Docs</h1></body></html>",
+    "metadata": {
+      "title": "Docs home",
+      "sourceURL": "https://docs.example.org/",
+      "url": "https://docs.example.org/en/",
+      "statusCode": 200,
+      "contentType": "text/html"
+    }
+  }
+}

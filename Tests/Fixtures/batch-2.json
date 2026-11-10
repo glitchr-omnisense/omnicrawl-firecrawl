@@ -1,0 +1,10 @@
+{
+  "status": "completed",
+  "total": 3,
+  "completed": 3,
+  "creditsUsed": 3,
+  "expiresAt": "2026-11-11T08:00:00.000Z",
+  "data": [
+    {"rawHtml": "<html><head><title>B</title></head></html>", "metadata": {"sourceURL": "https://docs.example.org/b", "url": "https://docs.example.org/b", "statusCode": 404}}
+  ]
+}

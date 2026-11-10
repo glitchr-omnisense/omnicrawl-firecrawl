@@ -1,0 +1,12 @@
+{
+  "status": "scraping",
+  "total": 3,
+  "completed": 2,
+  "creditsUsed": 2,
+  "expiresAt": "2026-11-11T08:00:00.000Z",
+  "next": "https://api.firecrawl.dev/v2/batch/scrape/9f3c2a1e-0000-4000-8000-000000000001?skip=2",
+  "data": [
+    {"rawHtml": "<html><head><title>A</title></head></html>", "metadata": {"sourceURL": "https://docs.example.org/a", "url": "https://docs.example.org/a", "statusCode": 200}},
+    {"rawHtml": "<html><head><title>Admin</title></head></html>", "metadata": {"sourceURL": "https://docs.example.org/admin/", "url": "https://docs.example.org/admin/", "statusCode": 200}}
+  ]
+}
