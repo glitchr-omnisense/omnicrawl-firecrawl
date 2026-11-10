@@ -20,7 +20,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  * factory's secrets otherwise - never the key itself), user_agent (the
  * registry gives the gate's), base_uri (https://api.firecrawl.dev/v2),
  * timeout (seconds, 60), plan (free by default; hobby, standard, growth,
- * scale: plans.json, as Firecrawl publishes their limits); policy, usage.
+ * scale: policy.json's plans, as Firecrawl publishes their limits); policy, usage.
  */
 final class FirecrawlFactory extends ProviderFactory
 {
@@ -56,6 +56,6 @@ final class FirecrawlFactory extends ProviderFactory
 
     protected function plans(): Plans
     {
-        return Plans::fromFile(FirecrawlProvider::PLANS);
+        return Plans::fromFile(FirecrawlProvider::POLICY);
     }
 }

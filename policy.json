@@ -8,7 +8,7 @@
             "operations": [
                 "fetch"
             ],
-            "note": "/scrape, per team: the free plan's figure, the default; the \"plan\" option picks another (plans.json)."
+            "note": "/scrape, per team: the free plan's figure, the default; the \"plan\" option picks another (plans)."
         },
         {
             "max": 2,
@@ -20,6 +20,127 @@
         }
     ],
     "concurrency": 2,
+    "plans": {
+        "default": "free",
+        "plans": {
+            "free": {
+                "rateLimits": [
+                    {
+                        "max": 10,
+                        "window": "minute",
+                        "operations": [
+                            "fetch"
+                        ],
+                        "note": "/scrape, per team"
+                    },
+                    {
+                        "max": 2,
+                        "window": "minute",
+                        "operations": [
+                            "start"
+                        ],
+                        "note": "/crawl, which batch scrape shares"
+                    }
+                ],
+                "concurrency": 2,
+                "source": "https://docs.firecrawl.dev/rate-limits",
+                "verifiedAt": "2026-11-10"
+            },
+            "hobby": {
+                "rateLimits": [
+                    {
+                        "max": 100,
+                        "window": "minute",
+                        "operations": [
+                            "fetch"
+                        ],
+                        "note": "/scrape, per team"
+                    },
+                    {
+                        "max": 20,
+                        "window": "minute",
+                        "operations": [
+                            "start"
+                        ],
+                        "note": "/crawl, which batch scrape shares"
+                    }
+                ],
+                "concurrency": 5,
+                "source": "https://docs.firecrawl.dev/rate-limits",
+                "verifiedAt": "2026-11-10"
+            },
+            "standard": {
+                "rateLimits": [
+                    {
+                        "max": 500,
+                        "window": "minute",
+                        "operations": [
+                            "fetch"
+                        ],
+                        "note": "/scrape, per team"
+                    },
+                    {
+                        "max": 100,
+                        "window": "minute",
+                        "operations": [
+                            "start"
+                        ],
+                        "note": "/crawl, which batch scrape shares"
+                    }
+                ],
+                "concurrency": 25,
+                "source": "https://docs.firecrawl.dev/rate-limits",
+                "verifiedAt": "2026-11-10"
+            },
+            "growth": {
+                "rateLimits": [
+                    {
+                        "max": 5000,
+                        "window": "minute",
+                        "operations": [
+                            "fetch"
+                        ],
+                        "note": "/scrape, per team"
+                    },
+                    {
+                        "max": 1000,
+                        "window": "minute",
+                        "operations": [
+                            "start"
+                        ],
+                        "note": "/crawl, which batch scrape shares"
+                    }
+                ],
+                "concurrency": 50,
+                "source": "https://docs.firecrawl.dev/rate-limits",
+                "verifiedAt": "2026-11-10"
+            },
+            "scale": {
+                "rateLimits": [
+                    {
+                        "max": 10000,
+                        "window": "minute",
+                        "operations": [
+                            "fetch"
+                        ],
+                        "note": "/scrape, per team"
+                    },
+                    {
+                        "max": 2000,
+                        "window": "minute",
+                        "operations": [
+                            "start"
+                        ],
+                        "note": "/crawl, which batch scrape shares"
+                    }
+                ],
+                "concurrency": 100,
+                "source": "https://docs.firecrawl.dev/rate-limits",
+                "verifiedAt": "2026-11-10",
+                "note": "Concurrent browsers published as \"100+\": 100 declared."
+            }
+        }
+    },
     "rights": {
         "commercial": "contract",
         "openSourceRequired": false,
@@ -50,6 +171,6 @@
         "verifiedAt": "2026-11-10",
         "declaredBy": "maintainer",
         "contact": "https://www.firecrawl.dev",
-        "notes": "Terms revised 2026-10-07. §5.d.1 forbids use for commercial purposes except as expressly authorized by Firecrawl: declared \"contract\" (a paid plan's agreement is that authorization; check yours). §7.g: use only in compliance with all applicable laws and regulations; the customer indemnifies Firecrawl and accepts all risks associated with third parties and their content - the legality of collecting a site stays the site's operator's, which is why omnicrawl's gate decides before Firecrawl is called. The terms say nothing of robots.txt or of keeping results. Limits are per team and per plan (https://docs.firecrawl.dev/rate-limits): this policy's figures are the free plan's, the default; plans.json declares hobby, standard, growth and scale, picked with the factory's \"plan\" option; a 429 covers rate and concurrency, with Retry-After when available. Firecrawl checks robots.txt itself for the token FirecrawlAgent and * before crawling, which the family does not rely on. Not used: proxy \"enhanced\"/\"auto\" (anti-bot proxies), actions, location, mobile."
+        "notes": "Terms revised 2026-10-07. §5.d.1 forbids use for commercial purposes except as expressly authorized by Firecrawl: declared \"contract\" (a paid plan's agreement is that authorization; check yours). §7.g: use only in compliance with all applicable laws and regulations; the customer indemnifies Firecrawl and accepts all risks associated with third parties and their content - the legality of collecting a site stays the site's operator's, which is why omnicrawl's gate decides before Firecrawl is called. The terms say nothing of robots.txt or of keeping results. Limits are per team and per plan (https://docs.firecrawl.dev/rate-limits): this policy's figures are the free plan's, the default; plans declares hobby, standard, growth and scale, picked with the factory's \"plan\" option; a 429 covers rate and concurrency, with Retry-After when available. Firecrawl checks robots.txt itself for the token FirecrawlAgent and * before crawling, which the family does not rely on. Not used: proxy \"enhanced\"/\"auto\" (anti-bot proxies), actions, location, mobile."
     }
 }

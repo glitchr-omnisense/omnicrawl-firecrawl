@@ -22,7 +22,7 @@ final address), `metadata.sourceURL` (the address asked, in a batch); a batch's 
   Firecrawl's anti-bot proxies when the basic one is refused), `actions`, `location`, `mobile`,
   the crawl endpoint (it follows links: a run here is a batch over the addresses admitted).
 - **Cursor:** the `next` address is followed only on Firecrawl's API host.
-- **Plans:** `plans.json` declares the limits Firecrawl publishes per plan (scrapes and batch
+- **Plans:** `policy.json`'s `plans` declares the limits Firecrawl publishes per plan (scrapes and batch
   starts a minute, browsers in flight): free 10/2/2 (the default), hobby 100/20/5, standard
   500/100/25, growth 5000/1000/50, scale 10000/2000/100. `'plan' => 'standard'` picks one; an
   unknown plan is refused; a site may only tighten the plan it picked. Enterprise publishes no

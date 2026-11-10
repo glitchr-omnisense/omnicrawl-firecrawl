@@ -8,7 +8,6 @@ use Omnicrawl\Exception\ProviderException;
 use Omnicrawl\FetcherInterface;
 use Omnicrawl\Http\Data;
 use Omnicrawl\Http\JsonClient;
-use Omnicrawl\Policy\Plans;
 use Omnicrawl\Model\CrawlRequest;
 use Omnicrawl\Model\CrawlRun;
 use Omnicrawl\Model\FetchedPage;
@@ -49,13 +48,10 @@ final class FirecrawlProvider implements FetcherInterface, RunnerInterface, Decl
     /** Firecrawl's terms and limits as read on the day it says (provenance.verifiedAt). */
     public const POLICY = __DIR__.'/policy.json';
 
-    /** The limits of each plan Firecrawl publishes; the default is the free one. */
-    public const PLANS = __DIR__.'/plans.json';
-
     /** @var array<string, UsagePolicy> by plan */
     private static array $policies = [];
 
-    /** @param ?string $plan the account's plan (plans.json); null: the default */
+    /** @param ?string $plan the account's plan (policy.json's plans); null: the default */
     public function __construct(private readonly JsonClient $client, private readonly string $base = self::BASE_URI, private readonly ?string $plan = null)
     {
     }
@@ -72,9 +68,8 @@ final class FirecrawlProvider implements FetcherInterface, RunnerInterface, Decl
 
     public function usagePolicy(): UsagePolicy
     {
-        $plans = Plans::fromFile(self::PLANS);
-
-        return self::$policies[$plans->check($this->plan)] ??= $plans->apply(UsagePolicy::fromFile(self::POLICY), $this->plan);
+        // policy.json declares the plans (its "plans" member); forPlan() refuses an unknown one.
+        return self::$policies[$this->plan ?? ''] ??= UsagePolicy::fromFile(self::POLICY)->forPlan($this->plan);
     }
 
     public function capabilities(): Capabilities

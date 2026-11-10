@@ -11,7 +11,6 @@ use Omnicrawl\Firecrawl\FirecrawlFactory;
 use Omnicrawl\Firecrawl\FirecrawlProvider;
 use Omnicrawl\Guard\Gate;
 use Omnicrawl\Model\RunStatus;
-use Omnicrawl\Policy\Plans;
 use Omnicrawl\Registry;
 use Omnicrawl\Secrets\ArraySecrets;
 use Omnicrawl\Target\Targets;
@@ -155,7 +154,7 @@ final class FirecrawlProviderTest extends TestCase
         self::assertSame(['5000/minute/application/fetch', '1000/minute/application/start'], array_map(static fn ($l) => $l->id(), $growth->rateLimits ?? []));
         self::assertSame(50, $growth->concurrency);
         $ids = static fn (UsagePolicy $p) => [array_map(static fn ($l) => $l->id(), $p->rateLimits ?? []), $p->concurrency];
-        self::assertSame($ids(UsagePolicy::fromFile(FirecrawlProvider::POLICY)), $ids(Plans::fromFile(FirecrawlProvider::PLANS)->apply(UsagePolicy::fromFile(FirecrawlProvider::POLICY))), 'policy.json is the default plan');
+        self::assertSame($ids(UsagePolicy::fromFile(FirecrawlProvider::POLICY)), $ids(UsagePolicy::fromFile(FirecrawlProvider::POLICY)->forPlan(null)), 'policy.json is the default plan');
 
         $tight = self::registry($api, null, ['plan' => 'growth', 'policy' => ['rateLimits' => [['max' => 60, 'window' => 'minute', 'operations' => ['fetch']]]]])->policy('firecrawl');
         self::assertCount(3, $tight->rateLimits ?? []);
